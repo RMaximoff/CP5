@@ -21,7 +21,7 @@ class HeadHunterEmployer:
         connector = Connector(url=self._url, params=self._params)
         return connector.data_dict
 
-    def _get_clean_data(self, data):
+    def _get_clean_data(self, data: dict):
         """
         Приводим в необходимый вид данные о компании
         """
