@@ -7,29 +7,28 @@ class DBConnector:
     """
     def __init__(self, db_name, user, password):
         self._db_name = db_name
-        self._default_db_name = 'postgres'
         self._user = user
         self._password = password
         self._host = 'localhost'
         self._port = 5432
-        self._employers_table_name = 'employers'
-        self._vacancies_table_name = 'vacancies'
 
         self._connection = None
-        self.cursor = None
+        self._cursor = None
 
-        if not self._check_db():
-            self._create_db()
-            self._create_table()
+        self._check_db()
 
-    def _connect(self, db_name):
+    @property
+    def cursor(self):
+        return self._cursor
+
+    def _connect(self):
         """Подключение к БД"""
-        self._connection = psycopg2.connect(database=db_name,
+        self._connection = psycopg2.connect(database=self._db_name,
                                             user=self._user,
                                             password=self._password,
                                             host=self._host,
                                             port=self._port)
-        self.cursor = self._connection.cursor()
+        self._cursor = self._connection.cursor()
 
     def _disconnect(self):
         """Отключение от БД"""
@@ -41,45 +40,51 @@ class DBConnector:
     def _check_db(self):
         """Проверка существования БД"""
         try:
-            self._connect(self._db_name)
+            self._connect()
             self._disconnect()
 
-            return True
-
         except (Exception, psycopg2.Error) as error:
-            return False
+            self._create_db()
+            self._create_table()
 
     def _create_db(self):
         """Создание БД"""
-        self._connect(self._default_db_name)
+        db_name = self._db_name
+        self._db_name = 'postgres'
+        self._connect()
         self._connection.autocommit = True
-        self.cursor.execute(f"CREATE DATABASE {self._db_name};")
+        self._cursor.execute(f"CREATE DATABASE {db_name};")
 
         self._connection.autocommit = False
         self._disconnect()
+        self._db_name = db_name
 
     def _create_table(self):
         """Создание таблиц в БД"""
-        self._connect(self._db_name)
-        self.cursor.execute(f"CREATE TABLE {self._employers_table_name}" \
-                            f"(id SERIAL PRIMARY KEY," \
-                            f"hh_id int," \
-                            f"company_name varchar not null," \
-                            f"hh_url varchar not null," \
-                            f"company_url varchar," \
-                            f"description text);" \
-                            f"CREATE TABLE {self._vacancies_table_name}" \
-                            f"(id SERIAL PRIMARY KEY," \
-                            f"hh_id int not null," \
-                            f"employer_id int references {self._employers_table_name}(id) not null," \
-                            f"vacancy_name varchar," \
-                            f"requirement varchar," \
-                            f"responsibility varchar," \
-                            f"salary_from real," \
-                            f"salary_to real," \
-                            f"salary_currency varchar," \
-                            f"url varchar)")
+        self._connect()
+        self._cursor.execute(f"CREATE TABLE employers" \
+                             f"(employer_id int unique," \
+                             f"company_name varchar not null," \
+                             f"hh_url varchar not null," \
+                             f"company_url varchar," \
+                             f"description text);" \
+                            
+                             f"CREATE TABLE vacancies" \
+                             f"(vacancy_id int unique," \
+                             f"employer_id int references employers(employer_id) not null," \
+                             f"vacancy_name varchar," \
+                             f"requirement varchar," \
+                             f"responsibility varchar," \
+                             f"salary_from real," \
+                             f"salary_to real," \
+                             f"salary_currency varchar," \
+                             f"url varchar)")
         self._disconnect()
 
+    def __enter__(self):
+        self._check_db()
+        self._connect()
+        return self
 
-
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._disconnect()

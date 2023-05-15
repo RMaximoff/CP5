@@ -1,5 +1,6 @@
-from src.connector import Connector
+from src.hh_connector import Connector
 from bs4 import BeautifulSoup
+import json
 
 
 class HeadHunterEmployer:
@@ -14,6 +15,11 @@ class HeadHunterEmployer:
         self._employer_clean_data = {}
         self._get_clean_data(self._employer_data)
 
+    @property
+    def employers_data(self):
+        return self._employer_clean_data
+
+
     def _get_employer_data(self):
         """
         Метод получает данные о компаниях и сохраняет их в словаре
@@ -25,11 +31,11 @@ class HeadHunterEmployer:
         """
         Приводим в необходимый вид данные о компании
         """
-        self._employer_clean_data["id"] = data.get("id")
-        self._employer_clean_data["name"] = data.get("name")
+        self._employer_clean_data["employer_id"] = data.get("id")
+        self._employer_clean_data["company_name"] = data.get("name")
         self._employer_clean_data["hh_url"] = data.get("alternate_url")
         self._employer_clean_data["company_url"] = data.get("site_url")
         self._employer_clean_data["description"] = BeautifulSoup(data.get("description"), 'html.parser').get_text()
 
     def __repr__(self):
-        return f'{self._employer_clean_data}'
+        return f'{json.dumps(self._employer_clean_data)}'
