@@ -31,7 +31,7 @@ class HeadhunterVacancy:
         """
         Приводим в необходимый вид данные вакансий
         """
-        for i in range(self._num_of_cycle):
+        for i in range(2):
             self._get_vacancies()
 
             for vacancy in data['items']:

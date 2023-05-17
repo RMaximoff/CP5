@@ -57,7 +57,7 @@ class DBManager:
                    WHERE v.salary_to > 0 or v.salary_from > 0)"""
         self._connect(query)
 
-    def get_vacancies_with_keyword(self, keyword):
+    def get_vacancies_with_keyword(self, word):
         """Получает список всех вакансий, в названии которых содержатся переданные в метод слова"""
         query = """SELECT e.company_name, 
                           v.vacancy_name,
@@ -65,10 +65,13 @@ class DBManager:
                           v.url
                    FROM vacancies v
                    LEFT JOIN employers e on v.employer_id = e.employer_id
-                   WHERE v.vacancy_name LIKE ANY (%s)"""
-        keyword = '%'+keyword+'%'
+                   WHERE v.vacancy_name LIKE %s"""
+        keyword = '%'+word+'%'
         with DBConnector(self._db_name, self._user, self._password) as conn:
-            conn.cursor.execute(query, (list(keyword),))
+            conn.cursor.execute(query, (keyword,))
             results = conn.cursor.fetchall()
-            for i in results:
-                print(i)
+            if len(results) == 0:
+                print(f"В названиях вакансий слова '{word}' не найдено\n")
+            else:
+                for i in results:
+                    print(i)
