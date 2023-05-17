@@ -1,11 +1,12 @@
 import psycopg2
+import queries
 
 
 class DBConnector:
     """
     Класс с основными методами взаимодействия с БД
     """
-    def __init__(self, db_name, user, password):
+    def __init__(self, db_name: str, user: str, password: str):
         self._db_name = db_name
         self._user = user
         self._password = password
@@ -47,6 +48,33 @@ class DBConnector:
             self._create_db()
             self._create_table()
 
+        finally:
+            self._check_table()
+
+    def _check_table(self):
+        """Проверяем существование таблиц"""
+        self._connect()
+
+        tables = ['employers', 'vacancies']
+        response = []
+        for name in tables:
+            try:
+                self._cursor.execute(f"SELECT EXISTS ("
+                                     f"SELECT 1 "
+                                     f"FROM information_schema.tables "
+                                     f"WHERE table_name = {name})")
+
+                response.append(self._cursor.fetchone()[0])
+
+            except psycopg2.Error:
+                pass
+
+        if len(response) < 2:
+            self._disconnect()
+            self._create_table()
+        else:
+            pass
+
     def _create_db(self):
         """Создание БД"""
         db_name = self._db_name
@@ -62,6 +90,7 @@ class DBConnector:
     def _create_table(self):
         """Создание таблиц в БД"""
         self._connect()
+        self._cursor.execute("DROP TABLE IF EXISTS  vacancies, employers")
         self._cursor.execute(f"CREATE TABLE employers" \
                              f"(employer_id int unique," \
                              f"company_name varchar not null," \
