@@ -62,7 +62,7 @@ class DBConnector:
                 self._cursor.execute(f"SELECT EXISTS ("
                                      f"SELECT 1 "
                                      f"FROM information_schema.tables "
-                                     f"WHERE table_name = {name})")
+                                     f"WHERE table_name = '{name}')")
 
                 response.append(self._cursor.fetchone()[0])
 
