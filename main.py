@@ -15,7 +15,10 @@ def main():
         employers_data.append(HeadHunterEmployer(employers_list[employer]).employers_data)
 
     vacancies = HeadhunterVacancy(list(employers_list.values())).vacancies
-    print(f"Найдено {len(vacancies)} вакансий.")
+
+    if len(vacancies) == 0:
+        print('Вакансий не найдено')
+        quit()
 
     db_name = 'hh_parsing_data'
     while True:
