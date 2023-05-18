@@ -73,5 +73,6 @@ class DBManager:
             if len(results) == 0:
                 print(f"В названиях вакансий слова '{word}' не найдено\n")
             else:
+
                 for i in results:
                     print(i)

@@ -91,7 +91,7 @@ class DBConnector:
     def _create_table(self):
         """Создание таблиц в БД"""
         self._connect()
-        self._cursor.execute("DROP TABLE IF EXISTS  vacancies, employers")
+        self._cursor.execute("DROP TABLE IF EXISTS  vacancies, employers;")
         self._cursor.execute(f"CREATE TABLE employers" \
                              f"(employer_id int unique," \
                              f"company_name varchar not null," \
