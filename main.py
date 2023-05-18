@@ -15,7 +15,9 @@ def main():
         employers_data.append(HeadHunterEmployer(employers_list[employer]).employers_data)
 
     vacancies = HeadhunterVacancy(list(employers_list.values())).vacancies
-
+    if len(vacancies) == 0:
+        print('Вакансий не найдено')
+        quit()
     db_name = 'hh_parsing_data'
     while True:
         user = input('Укажите имя пользователя как в PgAdmin: ')
