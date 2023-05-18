@@ -4,7 +4,6 @@ from src.db_connector import DBConnector
 from src.hh_employer import HeadHunterEmployer
 from src.hh_vacancy import HeadhunterVacancy
 from src.db_manager import DBManager
-import json
 
 
 def main():
@@ -17,7 +16,6 @@ def main():
 
     vacancies = HeadhunterVacancy(list(employers_list.values())).vacancies
     print(f"Найдено {len(vacancies)} вакансий.")
-    print(json.dumps(vacancies, indent=2, ensure_ascii=False))
 
     db_name = 'hh_parsing_data'
     while True:
