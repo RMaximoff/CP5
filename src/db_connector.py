@@ -62,7 +62,7 @@ class DBConnector:
                 self._cursor.execute(f"SELECT EXISTS ("
                                      f"SELECT 1 "
                                      f"FROM information_schema.tables "
-                                     f"WHERE table_name = {name})")
+                                     f"WHERE table_name = '{name}')")
 
                 response.append(self._cursor.fetchone()[0])
 
@@ -90,7 +90,7 @@ class DBConnector:
     def _create_table(self):
         """Создание таблиц в БД"""
         self._connect()
-        self._cursor.execute("DROP TABLE IF EXISTS  vacancies, employers")
+        self._cursor.execute("DROP TABLE IF EXISTS  vacancies, employers;")
         self._cursor.execute(f"CREATE TABLE employers" \
                              f"(employer_id int unique," \
                              f"company_name varchar not null," \

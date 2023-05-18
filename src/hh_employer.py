@@ -19,7 +19,6 @@ class HeadHunterEmployer:
     def employers_data(self):
         return self._employer_clean_data
 
-
     def _get_employer_data(self):
         """
         Метод получает данные о компаниях и сохраняет их в словаре
