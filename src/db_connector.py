@@ -69,11 +69,12 @@ class DBConnector:
             except psycopg2.Error:
                 pass
 
-        if len(response) < 2:
+        if not all(response):
             self._disconnect()
             self._create_table()
         else:
             pass
+
 
     def _create_db(self):
         """Создание БД"""
@@ -112,8 +113,12 @@ class DBConnector:
 
     def __enter__(self):
         self._check_db()
+        self._check_table()
         self._connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._disconnect()
+
+a = DBConnector('hh_parsing_data', 'postgres', '2175')
+print(a._check_table())
